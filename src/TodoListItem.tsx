@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 type Props = {
   todo: Todo;
@@ -17,11 +17,23 @@ export const TodoListItem = ({
 }: Props) => {
   const editInputRef = useRef<HTMLInputElement>(null);
 
+  const focusInputAndToggleIsEditing = useCallback(
+    (todo: Todo) => {
+      toggleIsEditing(todo);
+
+      if (todo.isEditing) {
+        editInputRef?.current?.focus();
+      }
+    },
+    [editInputRef, toggleIsEditing]
+  );
+
   useEffect(() => {
-    if (editInputRef) {
+    if (todo.isEditing) {
       editInputRef?.current?.focus();
     }
-  }, []);
+  }, [todo.isEditing]);
+
   return (
     <li className="margin-top">
       <div>
@@ -47,12 +59,16 @@ export const TodoListItem = ({
             }}
           />
         ) : (
-          <span onClick={() => toggleIsEditing(todo)}>{todo.text}</span>
+          <span onClick={() => focusInputAndToggleIsEditing(todo)}>
+            {todo.text}
+          </span>
         )}
         {todo.isEditing ? (
           <button onClick={() => toggleIsEditing(todo)}>Save</button>
         ) : (
-          <button onClick={() => toggleIsEditing(todo)}>Edit</button>
+          <button onClick={() => focusInputAndToggleIsEditing(todo)}>
+            Edit
+          </button>
         )}
         <button type="submit" onClick={() => removeTodo(todo.id)}>
           Delete
