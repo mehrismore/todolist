@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 type Props = {
   todo: Todo;
@@ -16,17 +16,6 @@ export const TodoListItem = ({
   setTodoText,
 }: Props) => {
   const editInputRef = useRef<HTMLInputElement>(null);
-
-  const focusInputAndToggleIsEditing = useCallback(
-    (todo: Todo) => {
-      toggleIsEditing(todo);
-
-      if (todo.isEditing) {
-        editInputRef?.current?.focus();
-      }
-    },
-    [editInputRef, toggleIsEditing]
-  );
 
   useEffect(() => {
     if (todo.isEditing) {
@@ -57,18 +46,10 @@ export const TodoListItem = ({
                 toggleIsEditing(todo);
               }
             }}
+            onBlur={() => toggleIsEditing(todo)}
           />
         ) : (
-          <span onClick={() => focusInputAndToggleIsEditing(todo)}>
-            {todo.text}
-          </span>
-        )}
-        {todo.isEditing ? (
-          <button onClick={() => toggleIsEditing(todo)}>Save</button>
-        ) : (
-          <button onClick={() => focusInputAndToggleIsEditing(todo)}>
-            Edit
-          </button>
+          <span onClick={() => toggleIsEditing(todo)}>{todo.text}</span>
         )}
         <button type="submit" onClick={() => removeTodo(todo.id)}>
           Delete

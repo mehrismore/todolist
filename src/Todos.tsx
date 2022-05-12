@@ -3,11 +3,11 @@ import { TodoListItem } from "./TodoListItem";
 import { nanoid } from "nanoid";
 import "./Todos.css";
 
-const initialTodos: Array<Todo> = [];
-
 export const Todos: React.FC = () => {
   const [newTodo, setNewTodo] = useState("");
-  const [todos, setTodos] = useState(initialTodos);
+  const [todos, setTodos] = useState(
+    JSON.parse(localStorage.getItem("todos") || "[]")
+  );
 
   const addTodo = (newTodo: string) => {
     setTodos([
@@ -15,6 +15,10 @@ export const Todos: React.FC = () => {
       { text: newTodo, complete: false, id: nanoid(), isEditing: false },
     ]);
   };
+
+  React.useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
   const handleSubmit = (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -25,12 +29,12 @@ export const Todos: React.FC = () => {
   };
 
   const removeTodo = (ID: string) => {
-    const updatedTodos = todos.filter((todo) => todo.id !== ID);
+    const updatedTodos = todos.filter((todo: Todo) => todo.id !== ID);
     setTodos(updatedTodos);
   };
 
   const toggleTodo = (selectedTodo: Todo) => {
-    const newTodosArray = todos.map((todo) => {
+    const newTodosArray = todos.map((todo: Todo) => {
       if (selectedTodo === todo) {
         return {
           ...todo,
@@ -43,7 +47,7 @@ export const Todos: React.FC = () => {
   };
 
   const toggleIsEditing = (selectedTodo: Todo) => {
-    const newTodosArray = todos.map((todo) => {
+    const newTodosArray = todos.map((todo: Todo) => {
       if (selectedTodo === todo) {
         return {
           ...todo,
@@ -56,7 +60,7 @@ export const Todos: React.FC = () => {
   };
 
   const setTodoText = (selectedTodo: Todo, newText: string) => {
-    const newTodosArray = todos.map((todo) => {
+    const newTodosArray = todos.map((todo: Todo) => {
       if (selectedTodo === todo) {
         return {
           ...todo,
@@ -91,7 +95,7 @@ export const Todos: React.FC = () => {
         </button>
       </form>
       <ul>
-        {todos.map((todo) => {
+        {todos.map((todo: Todo) => {
           return (
             <TodoListItem
               todo={todo}
