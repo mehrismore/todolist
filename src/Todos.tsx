@@ -1,10 +1,17 @@
-import React, { FormEvent, useEffect, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { TodoListItem } from "./TodoListItem";
 import { nanoid } from "nanoid";
 import "./Todos.css";
 
 export const Todos: React.FC = () => {
   const [newTodo, setNewTodo] = useState("");
+  const [charCount, setCharCount] = useState(0);
   const [todos, setTodos] = useState(
     JSON.parse(localStorage.getItem("todos") || "[]")
   );
@@ -80,19 +87,34 @@ export const Todos: React.FC = () => {
     }
   }, []);
 
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setNewTodo(e.target.value);
+    setCharCount(e.target.value.length);
+    console.log(charCount);
+  };
+
+  const charLimit = 5;
+  const isTodoTextLimitExceeded = charCount > 5;
   return (
     <>
       <form>
-        <input
-          type="text"
-          placeholder="add todo"
-          onChange={(e) => setNewTodo(e.target.value)}
-          value={newTodo}
-          ref={todoInputRef}
-        />
-        <button type="submit" onClick={handleSubmit}>
-          Add todo
-        </button>
+        <div>
+          <input
+            type="text"
+            placeholder="add todo"
+            onChange={handleInputChange}
+            value={newTodo}
+            ref={todoInputRef}
+          />
+          <button type="submit" onClick={handleSubmit}>
+            Add todo
+          </button>
+          <span style={charCount > 5 ? { color: "red" } : { color: "black" }}>
+            {" "}
+            Characters:{" "}
+            {isTodoTextLimitExceeded ? charLimit - charCount : charCount} /5
+          </span>
+        </div>
       </form>
       <ul>
         {todos.map((todo: Todo) => {
